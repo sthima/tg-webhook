@@ -38,16 +38,16 @@ class WebHook(object):
                 url=hook.url,
                 method=hook.method
             )
+            log.debug("Trying to authenticate [%s %s]" % (request.get('method'), request.get('url')))
             request = hook.authenticate(request, kwargs)
             if not request:
                 continue
+            log.debug("Authenticated successfully [%s %s]" % (request.get('method'), request.get('url')))
             request = hook.execute(request, kwargs)
             if not request:
                 continue
-            url = request.get("url")
-            method = request.get("method")
-            log.debug("Making request [%s %s]" % (method, url))
+            log.debug("Making request [%s %s]" % (request.get('method'), request.get('url')))
             response = requests.request(**request)
-            log.debug("Status code to request [%s %s]: %s" % (method, url, response.status_code))
+            log.debug("Status code to request [%s %s]: %s" % (request.get('method'), request.get('url'), response.status_code))
             if hook.callback:
                 hook.callback(response, kwargs)
